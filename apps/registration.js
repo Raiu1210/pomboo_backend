@@ -6,6 +6,6 @@ module.exports.registar_user = function(req, res) {
         message: 'this is registar'
     })
     console.log("this is registar")
-    // var title = req.body.title
-    // console.log(title)
+    var title = req.body.title
+    console.log(title)
 }
