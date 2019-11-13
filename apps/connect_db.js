@@ -4,7 +4,7 @@ var dbConfig = {
     host : 'localhost',
     user : 'raiu',
     password : 'raiu114514',
-    database: 'mona_marche',
+    database: 'pomboo',
     timezone: 'jst'
 };
 
