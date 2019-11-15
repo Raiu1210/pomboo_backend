@@ -1,5 +1,6 @@
 const mysql = require('mysql')
-const crypto = require('crypto');
+const crypto = require('crypto')
+
 const db = require('./connect_db')
 
 module.exports.registar_user = function(req, res) {
@@ -15,7 +16,6 @@ module.exports.registar_user = function(req, res) {
     db.connect()
     // check user is already exists or not
     let check_sql = "select count(*) from user_list where email = " + email + ";"
-    console.log(check_sql)
     db.query(check_sql, (err, rows, fields) => {
         if (err) throw err;
         if (rows[0]["count(*)"] == 0) {
