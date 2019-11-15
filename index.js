@@ -26,6 +26,7 @@ var server = http.createServer(app);
 
 app.get('/', test.test_func)
 app.post('/registration', registration.registar_user)
+app.post('/login', login.login)
 
 
 server.listen(process.env.PORT || 3000)
