@@ -41,20 +41,17 @@ module.exports.registar_user = async function(req, res) {
     if (count_of_input_email == 0) {
         // not existed -> (1) insert user info into user_list table
         //             -> (2) create table user_[user_id]_location table
-
+        
         // (1) insert user info into user_list table
         const insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
         try {
             let [rows_2, fields_2] = await conn.query(insert_sql);
-            res.send({
-                message: 'registered'
-            })
         } catch (err) {
             throw err;
         }
-            
-            
+             
         // (2) create table [email-hash].sha256.hex_location table
+        // get user_id from user_list table
         let user_id
         const id_check_sql = "select id from user_list where email=" + email
         try {
@@ -64,6 +61,7 @@ module.exports.registar_user = async function(req, res) {
             throw err;
         }
 
+        // create user_[user_id]_location table
         const table_name = "user_" + user_id + "_location ("
         let create_uesr_location_table_sql = "CREATE TABLE " + table_name +
                 "`permission` TINYINT," +
@@ -71,22 +69,20 @@ module.exports.registar_user = async function(req, res) {
                 "`longitude` DOUBLE," +
                 "`timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
                 ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
-        console.log(create_uesr_location_table_sql)
-
         try {
             let [rows_4, fields_4] = await conn.query(create_uesr_location_table_sql);
+            res.send({
+                message: 'register succeeded'
+            })
         } catch (err) {
             throw err;
         }
-
-            
     } else {
         // existed
         res.send({
             message: 'this email address is already registered'
         })
     }
-
 
     conn.end();
 }
