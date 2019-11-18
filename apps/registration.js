@@ -7,17 +7,17 @@ const db_config = require('./db_config')
 
 
 module.exports.registar_user = async function(req, res) {
-    const json = req.body
-    const email = mysql.escape(json.email)
-    const password = mysql.escape(json.password)
+    const posted_data = req.body
+    const email = mysql.escape(posted_data.email)
+    const password = mysql.escape(posted_data.password)
     const password_hash = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
-    const user_name = mysql.escape(json.user_name)
+    const user_name = mysql.escape(posted_data.user_name)
 
     const SQL_VAR = "email, password_hash, user_name"
     const VALUES = email + ",'" + password_hash + "'," + user_name
 
     // if json.email is not email address
-    if (!MailCheck(json.email)) {
+    if (!MailCheck(posted_data.email)) {
         res.send({
             message: 'this email address is not valid'
         })
