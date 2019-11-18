@@ -40,46 +40,45 @@ module.exports.registar_user = async function(req, res) {
     // proceed with counted info
     if (count_of_input_email == 0) {
         // not existed -> (1) insert user info into user_list table
-        //             -> (2) create table [email-hash].sha256.hex_location table
+        //             -> (2) create table user_[user_id]_location table
 
         // (1) insert user info into user_list table
-        let insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
+        const insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
         try {
             let [rows_2, fields_2] = await conn.query(insert_sql);
             res.send({
                 message: 'registered'
             })
-        } catch {
+        } catch (err) {
             throw err;
         }
             
             
         // (2) create table [email-hash].sha256.hex_location table
         let user_id
-        let id_check_sql = "select id from user_list where email=" + email
+        const id_check_sql = "select id from user_list where email=" + email
         try {
             let [rows_3, fields_3] = await conn.query(id_check_sql);
             user_id = rows_3[0]["id"]
-        } catch {
+        } catch (err) {
             throw err;
         }
 
-        console.log("id = " + user_id)
+        const table_name = "user_" + user_id + "_location ("
+        let create_uesr_location_table_sql = "CREATE TABLE " + table_name +
+                "`permission` TINYINT," +
+                "`latitude` DOUBLE," +
+                "`longitude` DOUBLE," +
+                "`timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
+        console.log(create_uesr_location_table_sql)
 
-            // db.query(id_check_sql, (err, rows3, fields) => {
-            //     let table_name = "user" 
-            //     let uesr_table_sql = "CREATE TABLE " + table_name + " IF NOT EXISTS (" +
-            //         "`permission` TYNYINT NOT NULL," +
-            //         "latitude double," +
-            //         "longitude double," +
-            //         "timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
-            //         ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
+        try {
+            let [rows_4, fields_4] = await conn.query(create_uesr_location_table_sql);
+        } catch (err) {
+            throw err;
+        }
 
-            //     console.log(rows3)
-            //     // db.query(uesr_table_sql, (err, rows, fields) => {
-
-            //     // })
-            // })
             
     } else {
         // existed
@@ -88,45 +87,6 @@ module.exports.registar_user = async function(req, res) {
         })
     }
 
-    
-
-    // db.query(check_sql, (err, rows1, fields) => {
-    //     if (err) throw err;
-    //     if (rows1[0]["count(*)"] == 0) {
-    //         // not existed
-    //         // insert user info into table
-    //         let insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
-    //         db.query(insert_sql, (err, rows2, fields) => {
-    //             if (err) throw err;
-    //             res.send({
-    //                 message: 'registered'
-    //             })
-
-    //             // create user info table
-    //             // let id_check_sql = "select id from user_list where email=" + email
-    //             // db.query(id_check_sql, (err, rows3, fields) => {
-    //             //     let table_name = "user" 
-    //             //     let uesr_table_sql = "CREATE TABLE " + table_name + " IF NOT EXISTS (" +
-    //             //         "`permission` TYNYINT NOT NULL," +
-    //             //         "latitude double," +
-    //             //         "longitude double," +
-    //             //         "timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
-    //             //         ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
-
-    //             //     console.log(rows3)
-    //             //     // db.query(uesr_table_sql, (err, rows, fields) => {
-
-    //             //     // })
-    //             // })
-                
-    //         })
-    //     } else {
-    //         // existed
-    //         res.send({
-    //             message: 'this email address is already registered'
-    //         })
-    //     }
-    // })
 
     conn.end();
 }
