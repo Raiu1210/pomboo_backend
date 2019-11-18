@@ -1,9 +1,9 @@
-const mysql = require('mysql')
+const mysql = require('mysql2/promise')
 const crypto = require('crypto')
 
-const db = require('./connect_db')
+const db_config = require('./db_config')
 
-module.exports.registar_user = function(req, res) {
+module.exports.registar_user = async function(req, res) {
     let json = req.body
     let email = mysql.escape(json.email)
     let password = mysql.escape(json.password)
@@ -21,48 +21,58 @@ module.exports.registar_user = function(req, res) {
         return
     }
 
-    db.connect()
+
     // check user is already exists or not
+    const conn = await mysql.createConnection(db_config);
     let check_sql = "select count(*) from user_list where email = " + email + ";"
-    db.query(check_sql, (err, rows1, fields) => {
-        if (err) throw err;
-        if (rows1[0]["count(*)"] == 0) {
-            // not existed
-            // insert user info into table
-            let insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
-            db.query(insert_sql, (err, rows2, fields) => {
-                if (err) throw err;
-                res.send({
-                    message: 'registered'
-                })
+    try {
+        let [rows, fields] = await conn.query(check_sql);
+        console.log(rows)
+    } catch (err) {
+        throw err;
+    }
 
-                // create user info table
-                let id_check_sql = "select id from user_list where email=" + email
-                db.query(id_check_sql, (err, rows3, fields) => {
-                    let table_name = "user" 
-                    let uesr_table_sql = "CREATE TABLE " + table_name + " IF NOT EXISTS (" +
-                        "`permission` TYNYINT NOT NULL," +
-                        "latitude double," +
-                        "longitude double," +
-                        "timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
-                        ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
+    
 
-                    console.log(rows3)
-                    // db.query(uesr_table_sql, (err, rows, fields) => {
+    // db.query(check_sql, (err, rows1, fields) => {
+    //     if (err) throw err;
+    //     if (rows1[0]["count(*)"] == 0) {
+    //         // not existed
+    //         // insert user info into table
+    //         let insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
+    //         db.query(insert_sql, (err, rows2, fields) => {
+    //             if (err) throw err;
+    //             res.send({
+    //                 message: 'registered'
+    //             })
 
-                    // })
-                })
+    //             // create user info table
+    //             // let id_check_sql = "select id from user_list where email=" + email
+    //             // db.query(id_check_sql, (err, rows3, fields) => {
+    //             //     let table_name = "user" 
+    //             //     let uesr_table_sql = "CREATE TABLE " + table_name + " IF NOT EXISTS (" +
+    //             //         "`permission` TYNYINT NOT NULL," +
+    //             //         "latitude double," +
+    //             //         "longitude double," +
+    //             //         "timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+    //             //         ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
+
+    //             //     console.log(rows3)
+    //             //     // db.query(uesr_table_sql, (err, rows, fields) => {
+
+    //             //     // })
+    //             // })
                 
-            })
-        } else {
-            // existed
-            res.send({
-                message: 'this email address is already registered'
-            })
-        }
+    //         })
+    //     } else {
+    //         // existed
+    //         res.send({
+    //             message: 'this email address is already registered'
+    //         })
+    //     }
+    // })
 
-        db.end()
-    })
+    conn.end();
 }
 
 

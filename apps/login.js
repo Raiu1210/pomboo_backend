@@ -1,7 +1,7 @@
-const mysql = require('mysql')
+const mysql = require('mysql2/promise')
 const crypto = require('crypto')
 
-const db = require('./connect_db')
+const db = require('./db_config')
 
 module.exports.login = function(req, res) { 
     let json = req.body
