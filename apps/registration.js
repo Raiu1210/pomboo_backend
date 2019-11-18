@@ -1,14 +1,17 @@
+// npm modules
 const mysql = require('mysql2/promise')
 const crypto = require('crypto')
 
+// modules I wrote
 const db_config = require('./db_config')
 
+
 module.exports.registar_user = async function(req, res) {
-    let json = req.body
-    let email = mysql.escape(json.email)
-    let password = mysql.escape(json.password)
-    let password_hash = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
-    let user_name = mysql.escape(json.user_name)
+    const json = req.body
+    const email = mysql.escape(json.email)
+    const password = mysql.escape(json.password)
+    const password_hash = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
+    const user_name = mysql.escape(json.user_name)
 
     const SQL_VAR = "email, password_hash, user_name"
     const VALUES = email + ",'" + password_hash + "'," + user_name
@@ -21,15 +24,68 @@ module.exports.registar_user = async function(req, res) {
         return
     }
 
+    // connect db
+    const conn = await mysql.createConnection(db_config);
 
     // check user is already exists or not
-    const conn = await mysql.createConnection(db_config);
-    let check_sql = "select count(*) from user_list where email = " + email + ";"
+    let count_of_input_email
+    const check_sql = "select count(*) from user_list where email = " + email + ";"
     try {
-        let [rows, fields] = await conn.query(check_sql);
-        console.log(rows)
+        let [rows_1, fields_1] = await conn.query(check_sql);
+        count_of_input_email = rows_1[0]["count(*)"]
     } catch (err) {
         throw err;
+    }
+
+    // proceed with counted info
+    if (count_of_input_email == 0) {
+        // not existed -> (1) insert user info into user_list table
+        //             -> (2) create table [email-hash].sha256.hex_location table
+
+        // (1) insert user info into user_list table
+        let insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
+        try {
+            let [rows_2, fields_2] = await conn.query(insert_sql);
+            res.send({
+                message: 'registered'
+            })
+        } catch {
+            throw err;
+        }
+            
+            
+        // (2) create table [email-hash].sha256.hex_location table
+        let user_id
+        let id_check_sql = "select id from user_list where email=" + email
+        try {
+            let [rows_3, fields_3] = await conn.query(id_check_sql);
+            user_id = rows_3[0]["id"]
+        } catch {
+            throw err;
+        }
+
+        console.log("id = " + user_id)
+
+            // db.query(id_check_sql, (err, rows3, fields) => {
+            //     let table_name = "user" 
+            //     let uesr_table_sql = "CREATE TABLE " + table_name + " IF NOT EXISTS (" +
+            //         "`permission` TYNYINT NOT NULL," +
+            //         "latitude double," +
+            //         "longitude double," +
+            //         "timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+            //         ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;"
+
+            //     console.log(rows3)
+            //     // db.query(uesr_table_sql, (err, rows, fields) => {
+
+            //     // })
+            // })
+            
+    } else {
+        // existed
+        res.send({
+            message: 'this email address is already registered'
+        })
     }
 
     
