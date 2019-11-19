@@ -41,7 +41,5 @@ module.exports = async function(req, res) {
             message: 'password is wrong',
             auth_result: auth_result
         })
-    } 
-    // console.log(auth_result)s
-    
+    }
 }

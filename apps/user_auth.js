@@ -12,7 +12,7 @@ const db_config = require('./db_config')
 // 2 : email is not registered
 // 3 : password is wrong
 module.exports = async function(plain_email, password_hash) {
-    // if json.email is not email address
+    // 1 : email address is not valid 
     if (!MailCheck(plain_email)) {
         return 1
     }
@@ -28,39 +28,23 @@ module.exports = async function(plain_email, password_hash) {
     try {
         let [rows, fields] = await conn.query(search_sql);
         if (Object.keys(rows).length == 0) {
-            // email is not registered
-            // res.send({
-            //     message: email + " is not registered"
-            // })
-
+            // 2 : email is not registered
             return 2
         } else {
             //　email registered
             if (password_hash == rows[0]["password_hash"]) {
-                // login succeeded
-                console.log("login success!")
-                // res.send({
-                //     message: "login success",
-                //     status: 1
-                // })
-
+                // 0 : auth succeed
                 return 0
             } else {
-                // login failed
-                console.log("login failed")
-                // res.send({
-                //     message: "login failed",
-                //     status: 0
-                // })
-
+                // 3 : password is wrong
                 return 3
             }
         }
     } catch (err) {
         throw err;
+    } finally {
+        conn.end()
     }
-
-    conn.end()
 }
 
 
