@@ -1,16 +1,30 @@
+// npm modules
 const mysql = require('mysql2/promise')
 const crypto = require('crypto')
 
-const db = require('./db_config')
+// modules I wrote
+const db_config = require('./db_config')
 
-module.exports.login = function(req, res) { 
-    let json = req.body
-    let email = mysql.escape(json.email)
-    let password = mysql.escape(json.password)
+module.exports.login = async function(req, res) { 
+    let posted_data = req.body
+    let email = mysql.escape(posted_data.email)
+    let password = mysql.escape(posted_data.password)
 
-    let find_email_sql = "SELECT password_hash FROM user_list WHERE email=" + email
-    db.query(find_email_sql, (err, rows, fields) => {
-        if (err) throw err
+    // if json.email is not email address
+    if (!MailCheck(posted_data.email)) {
+        res.send({
+            message: 'this email address is not valid'
+        })
+        return false
+    }
+
+    // connect db
+    const conn = await mysql.createConnection(db_config);
+
+    // search password by email
+    let search_sql = "SELECT password_hash FROM user_list WHERE email=" + email
+    try {
+        let [rows, fields] = await conn.query(search_sql);
         if (Object.keys(rows).length == 0) {
             // email is not registered
             res.send({
@@ -22,17 +36,37 @@ module.exports.login = function(req, res) {
             if (password_hash == rows[0]["password_hash"]) {
                 // login succeeded
                 console.log("login success!")
+                res.send({
+                    message: "login success",
+                    status: 1
+                })
             } else {
                 // login failed
                 console.log("login failed")
+                res.send({
+                    message: "login failed",
+                    status: 0
+                })
             }
         }
-    })
+    } catch (err) {
+        throw err;
+    }
 
-    console.log(email)
-    console.log(password)
 
-    res.send({
-        message: 'hey'
-    })
+}
+
+
+function MailCheck( mail ) {
+    var mail_regex1 = new RegExp( '(?:[-!#-\'*+/-9=?A-Z^-~]+\.?(?:\.[-!#-\'*+/-9=?A-Z^-~]+)*|"(?:[!#-\[\]-~]|\\\\[\x09 -~])*")@[-!#-\'*+/-9=?A-Z^-~]+(?:\.[-!#-\'*+/-9=?A-Z^-~]+)*' );
+    var mail_regex2 = new RegExp( '^[^\@]+\@[^\@]+$' );
+    if( mail.match( mail_regex1 ) && mail.match( mail_regex2 ) ) {
+        // 全角チェック
+        if( mail.match( /[^a-zA-Z0-9\!\"\#\$\%\&\'\(\)\=\~\|\-\^\\\@\[\;\:\]\,\.\/\\\<\>\?\_\`\{\+\*\} ]/ ) ) { return false; }
+        // 末尾TLDチェック（〜.co,jpなどの末尾ミスチェック用）
+        if( !mail.match( /\.[a-z]+$/ ) ) { return false; }
+        return true;
+    } else {
+        return false;
+    }
 }
