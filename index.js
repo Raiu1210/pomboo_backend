@@ -6,10 +6,12 @@ const http = require('http')
 // const https = require('https')
 // const fs = require('fs');
 
+
 // This is modules what I made
 const test = require('./apps/test')
 const registration = require('./apps/registration')
 const login = require('./apps/login')
+const update_location = require('./apps/update_location')
 
 // var options = {
 //     key:  fs.readFileSync('../../../ssl/localhost.key'),
@@ -27,6 +29,7 @@ var server = http.createServer(app);
 app.get('/', test.test_func)
 app.post('/registration', registration)
 app.post('/login', login)
+app.get('/update_location', update_location)
 
 
 server.listen(process.env.PORT || 3000)

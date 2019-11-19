@@ -86,7 +86,7 @@ module.exports = async function(req, res) {
         })
     }
 
-    conn.end();
+    conn.end()
 }
 
 
