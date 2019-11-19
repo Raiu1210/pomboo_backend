@@ -6,6 +6,8 @@ const crypto = require('crypto')
 const db_config = require('./db_config')
 
 module.exports.login = async function(req, res) { 
+    // initialize variables with posted data
+    // and escape them so as not to be attacked by sql injection
     let posted_data = req.body
     let email = mysql.escape(posted_data.email)
     let password = mysql.escape(posted_data.password)

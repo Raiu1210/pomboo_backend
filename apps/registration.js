@@ -7,14 +7,14 @@ const db_config = require('./db_config')
 
 
 module.exports.registar_user = async function(req, res) {
+    // initialize variables with posted data
+    // and escape them so as not to be attacked by sql injection
     const posted_data = req.body
     const email = mysql.escape(posted_data.email)
     const password = mysql.escape(posted_data.password)
     const password_hash = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
     const user_name = mysql.escape(posted_data.user_name)
 
-    const SQL_VAR = "email, password_hash, user_name"
-    const VALUES = email + ",'" + password_hash + "'," + user_name
 
     // if json.email is not email address
     if (!MailCheck(posted_data.email)) {
@@ -43,6 +43,8 @@ module.exports.registar_user = async function(req, res) {
         //             -> (2) create table user_[user_id]_location table
         
         // (1) insert user info into user_list table
+        const SQL_VAR = "email, password_hash, user_name"
+        const VALUES = email + ",'" + password_hash + "'," + user_name
         const insert_sql = "INSERT INTO user_list (" + SQL_VAR + ") VALUES (" + VALUES + ");" 
         try {
             let [rows_2, fields_2] = await conn.query(insert_sql);
