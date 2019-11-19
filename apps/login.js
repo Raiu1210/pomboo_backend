@@ -5,7 +5,8 @@ const crypto = require('crypto')
 // modules I wrote
 const db_config = require('./db_config')
 
-module.exports.login = async function(req, res) { 
+
+module.exports = async function(req, res) { 
     // initialize variables with posted data
     // and escape them so as not to be attacked by sql injection
     let posted_data = req.body
