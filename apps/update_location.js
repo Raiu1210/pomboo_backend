@@ -21,7 +21,7 @@ module.exports = async function(req, res) {
     // 1 : email address is not valid 
     // 2 : email is not registered
     // 3 : password is wrong
-    if (auth_result == 0) {
+    if (auth_result["status"] == 0) {
         const latitude = posted_data.latitude
         const longitude = posted_data.longitude
         const permission = posted_data.permission
@@ -46,8 +46,9 @@ module.exports = async function(req, res) {
         // connect db
         const conn = await mysql.createConnection(db_config);
 
-        const SQL_VAR = "email, password_hash, user_name"
-        const VALUES = permission + "," + longitude + "'," + latitude
+        const SQL_VAR = "permission, latitude, longitude"
+        const VALUES = permission + "," + latitude + "'," + longitude
+        // const insert_sql =
 
         res.send({
             message: 'geo data is good',

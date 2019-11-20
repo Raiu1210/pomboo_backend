@@ -14,7 +14,7 @@ const db_config = require('./db_config')
 module.exports = async function(plain_email, password_hash) {
     // 1 : email address is not valid 
     if (!MailCheck(plain_email)) {
-        return 1
+        return {status:1, id:null}
     }
 
     // escape email so as not to be atacked by sql injection
@@ -24,20 +24,21 @@ module.exports = async function(plain_email, password_hash) {
     const conn = await mysql.createConnection(db_config);
 
     // search password by email
-    let search_sql = "SELECT password_hash FROM user_list WHERE email=" + email
+    let search_sql = "SELECT id, password_hash FROM user_list WHERE email=" + email
     try {
         let [rows, fields] = await conn.query(search_sql);
         if (Object.keys(rows).length == 0) {
             // 2 : email is not registered
-            return 2
+            return {status:2, id:null}
         } else {
             //　email registered
             if (password_hash == rows[0]["password_hash"]) {
                 // 0 : auth succeed
-                return 0
+                const authed_id = rows[0]["id"]
+                return {status:0, id:authed_id}
             } else {
                 // 3 : password is wrong
-                return 3
+                return {status:3, id:null}
             }
         }
     } catch (err) {

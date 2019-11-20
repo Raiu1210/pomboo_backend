@@ -20,22 +20,22 @@ module.exports = async function(req, res) {
     // 1 : email address is not valid 
     // 2 : email is not registered
     // 3 : password is wrong
-    if (auth_result == 0) {
+    if (auth_result["status"] == 0) {
         res.send({
             message: 'auth success',
             auth_result: auth_result
         })
-    } else if (auth_result == 1) {
+    } else if (auth_result["status"] == 1) {
         res.send({
             message: 'email address is not valid',
             auth_result: auth_result
         })
-    } else if (auth_result == 2) {
+    } else if (auth_result["status"] == 2) {
         res.send({
             message: 'email is not registered',
             auth_result: auth_result
         })
-    } else if (auth_result == 3) {
+    } else if (auth_result["status"] == 3) {
         res.send({
             message: 'password is wrong',
             auth_result: auth_result
