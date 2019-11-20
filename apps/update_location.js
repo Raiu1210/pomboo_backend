@@ -47,13 +47,19 @@ module.exports = async function(req, res) {
         const conn = await mysql.createConnection(db_config);
 
         const SQL_VAR = "permission, latitude, longitude"
-        const VALUES = permission + "," + latitude + "'," + longitude
-        // const insert_sql =
-
-        res.send({
-            message: 'geo data is good',
-        })
-        
+        const VALUES = permission + "," + latitude + "," + longitude
+        const insert_loc_sql = "INSERT INTO user_" + auth_result["id"] + "_location" +
+                        " ( " + SQL_VAR + " ) VALUES (" + VALUES + " );"
+        try {
+            let [rows, fields] = await conn.query(insert_loc_sql);
+            res.send({
+                message: 'geo data is updated',
+            })
+        } catch (err) {
+            throw err;
+        } finally {
+            conn.end()
+        }
     } else if (auth_result == 1) {
         res.send({
             message: 'email address is not valid',
@@ -70,8 +76,6 @@ module.exports = async function(req, res) {
             auth_result: auth_result
         })
     }
-
-    console.log("this is update location")
 }
 
 
