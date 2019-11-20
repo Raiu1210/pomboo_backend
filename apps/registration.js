@@ -3,7 +3,7 @@ const mysql = require('mysql2/promise')
 const crypto = require('crypto')
 
 // modules I wrote
-const db_config = require('./db_config')
+const db_config = require('../my_modules/db_config')
 
 
 module.exports = async function(req, res) {

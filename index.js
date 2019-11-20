@@ -29,7 +29,7 @@ var server = http.createServer(app);
 app.get('/', test.test_func)
 app.post('/registration', registration)
 app.post('/login', login)
-app.get('/update_location', update_location)
+app.post('/update_location', update_location)
 
 
 server.listen(process.env.PORT || 3000)

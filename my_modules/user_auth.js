@@ -48,7 +48,7 @@ module.exports = async function(plain_email, password_hash) {
 }
 
 
-function MailCheck( mail ) {
+function MailCheck(mail) {
     var mail_regex1 = new RegExp( '(?:[-!#-\'*+/-9=?A-Z^-~]+\.?(?:\.[-!#-\'*+/-9=?A-Z^-~]+)*|"(?:[!#-\[\]-~]|\\\\[\x09 -~])*")@[-!#-\'*+/-9=?A-Z^-~]+(?:\.[-!#-\'*+/-9=?A-Z^-~]+)*' );
     var mail_regex2 = new RegExp( '^[^\@]+\@[^\@]+$' );
     if( mail.match( mail_regex1 ) && mail.match( mail_regex2 ) ) {
