@@ -24,6 +24,8 @@ module.exports = async function(req, res) {
     if (auth_result == 0) {
         const latitude = posted_data.latitude
         const longitude = posted_data.longitude
+        const permission = posted_data.permission
+
         // check geo data
         if (absolute(latitude) > 90 || absolute(longitude) > 180){
             res.send({
@@ -32,7 +34,20 @@ module.exports = async function(req, res) {
 
             return 
         }
+        // check permission
+        if (permission < 0 || permission > 2) {
+            res.send({
+                message: 'permission is not valid',
+            })
 
+            return
+        }
+
+        // connect db
+        const conn = await mysql.createConnection(db_config);
+
+        const SQL_VAR = "email, password_hash, user_name"
+        const VALUES = permission + "," + longitude + "'," + latitude
 
         res.send({
             message: 'geo data is good',
