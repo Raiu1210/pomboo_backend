@@ -74,7 +74,8 @@ module.exports = async function(req, res) {
         try {
             let [rows_4, fields_4] = await conn.query(create_uesr_location_table_sql);
             res.send({
-                message: 'register succeeded'
+                message: 'register succeeded',
+                user_id: user_id
             })
         } catch (err) {
             throw err;
