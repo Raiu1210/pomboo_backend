@@ -23,22 +23,26 @@ module.exports = async function(req, res) {
     if (auth_result["status"] == 0) {
         res.send({
             message: 'auth success',
-            auth_result: auth_result
+            status: auth_result["status"],
+            auth_id: auth_result["id"]
         })
     } else if (auth_result["status"] == 1) {
         res.send({
             message: 'email address is not valid',
-            auth_result: auth_result
+            status: auth_result["status"],
+            auth_id: auth_result["id"]
         })
     } else if (auth_result["status"] == 2) {
         res.send({
             message: 'email is not registered',
-            auth_result: auth_result
+            status: auth_result["status"],
+            auth_id: auth_result["id"]
         })
     } else if (auth_result["status"] == 3) {
         res.send({
             message: 'password is wrong',
-            auth_result: auth_result
+            status: auth_result["status"],
+            auth_id: auth_result["id"]
         })
     }
 }
