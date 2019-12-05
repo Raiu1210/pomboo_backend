@@ -15,11 +15,18 @@ module.exports = async function(req, res) {
     const password_hash = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
     const user_name = mysql.escape(posted_data.user_name)
 
+    // return number means the status of auth
+    // 0 : auth succeed
+    // 1 : email address is not valid 
+    // 2 : email is already registered
 
     // if json.email is not email address
     if (!MailCheck(posted_data.email)) {
         res.send({
-            message: 'this email address is not valid'
+            message: 'this email address is not valid',
+            status : 0,
+            user_id: -1,
+            user_name: 'none'
         })
         return
     }
@@ -75,7 +82,9 @@ module.exports = async function(req, res) {
             let [rows_4, fields_4] = await conn.query(create_uesr_location_table_sql);
             res.send({
                 message: 'register succeeded',
-                user_id: user_id
+                status : 0,
+                user_id: user_id,
+                user_name: user_name
             })
         } catch (err) {
             throw err;
@@ -83,7 +92,10 @@ module.exports = async function(req, res) {
     } else {
         // existed
         res.send({
-            message: 'this email address is already registered'
+            message: 'this email address is already registered',
+            status : 2,
+            user_id: -1,
+            user_name: "air man"
         })
     }
 
