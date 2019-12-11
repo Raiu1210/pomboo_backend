@@ -37,16 +37,13 @@ module.exports = async function(req, res) {
             try {
                 let [rows, fields] = await conn.query(get_my_relation_sql);
                 
-                console.log(rows)
+                res.send({
+                    message: 'Your relationships are here',
+                    relation: rows
+                })
             } catch (err) {
                 throw err;
             }
-
-
-            res.send({
-                message: 'Your relationships are here',
-            })
-
             return 
         }
         
