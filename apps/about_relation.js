@@ -24,15 +24,16 @@ module.exports = async function(req, res) {
     if (auth_result["status"] == 0) {
         const user_id = auth_result.id
         const request_code = posted_data.request_code
-        const level = posted_data.level
 
         // check request_code
         // code 0 : get relation
+        // code 1 : add relation
+        // code 2 : remove relation
         if (request_code == 0){
             // connect db
             const conn = await mysql.createConnection(db_config);
 
-            // (1) insert user info into user_list table
+            // (1) get [user_id]'s relation from relation
             const get_my_relation_sql = "SELECT follow_id, level, created FROM relation where user_id = " + user_id + ";" 
             try {
                 let [relation, fields] = await conn.query(get_my_relation_sql);
@@ -45,8 +46,14 @@ module.exports = async function(req, res) {
             } catch (err) {
                 throw err;
             }
-            return 
+
+            conn.end()
+            return
+        } else if (request_code == 1) {
+            const level = posted_data.level
+            const follow_id = posted_data.follow_id
         }
+    
         
     } else {
         console.log("this user doesn't uthed")
