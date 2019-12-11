@@ -35,11 +35,12 @@ module.exports = async function(req, res) {
             // (1) insert user info into user_list table
             const get_my_relation_sql = "SELECT follow_id, level, created FROM relation where user_id = " + user_id + ";" 
             try {
-                let [rows, fields] = await conn.query(get_my_relation_sql);
+                let [relation, fields] = await conn.query(get_my_relation_sql);
                 
                 res.send({
                     message: 'Your relationships are here',
-                    relation: rows
+                    status: 0,
+                    relation: relation
                 })
             } catch (err) {
                 throw err;
@@ -51,6 +52,8 @@ module.exports = async function(req, res) {
         console.log("this user doesn't uthed")
         res.send({
             message: 'you are not valid for now',
+            status: -1,
+            relation: [{"follow_id":-1,"level":-1,"created":"2019-12-11T06:38:40.000Z"}]
         })
     }
 
