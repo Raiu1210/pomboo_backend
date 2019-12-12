@@ -34,11 +34,10 @@ module.exports = async function(req, res) {
             // connect db
             const conn = await mysql.createConnection(db_config);
 
-            // (1) get [user_id]'s relation from relation
+            // get [user_id]'s relation from relation
             const get_my_relation_sql = "SELECT give_id, level, created FROM relation where user_id = " + user_id + ";" 
             try {
                 let [relation, fields] = await conn.query(get_my_relation_sql);
-                
                 res.send({
                     message: 'Your relationships are here',
                     status: 0,
@@ -86,6 +85,47 @@ module.exports = async function(req, res) {
                     status: 1,
                 })
             }
+
+            conn.end()
+            return
+        } else if (request_code == 2) {
+            // connect db
+            const conn = await mysql.createConnection(db_config);
+
+            // check relation exists or not
+            const check_sql = "SELECT count(*) FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
+            let relation_counter
+            try {
+                let [check_result, fields] = await conn.query(check_sql);
+                relation_counter = check_result[0]["count(*)"]
+            } catch (err) {
+                throw err;
+            }
+
+            // when relation exists, remove its relation
+            if (relation_counter != 0) {
+                const delete_sql = "DELETE FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
+                console.log(insert_sql)
+                try {
+                    let [delete_result, fields] = await conn.query(delete_sql);
+                    res.send({
+                        message: 'deleted',
+                        status: 0,
+                    })
+                } catch (err) {
+                    throw err;
+                }
+            } else {
+                res.send({
+                    message: 'it is not connected',
+                    status: 1,
+                })
+            }
+
+            conn.end()
+            return
+        } else if (request_code == 3) {
+
         }
     
         
