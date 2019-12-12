@@ -69,7 +69,6 @@ module.exports = async function(req, res) {
             // when user has not added, insert relation
             if (relation_counter == 0) {
                 const insert_sql = "INSERT INTO relation (user_id, give_id, level) VALUES (" + user_id + "," + give_id + "," + level + ");"
-                console.log(insert_sql)
                 try {
                     let [insert_result, fields] = await conn.query(insert_sql);
                     res.send({
@@ -89,6 +88,8 @@ module.exports = async function(req, res) {
             conn.end()
             return
         } else if (request_code == 2) {
+            const give_id = posted_data.give_id
+
             // connect db
             const conn = await mysql.createConnection(db_config);
 
@@ -105,7 +106,6 @@ module.exports = async function(req, res) {
             // when relation exists, remove its relation
             if (relation_counter != 0) {
                 const delete_sql = "DELETE FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
-                console.log(insert_sql)
                 try {
                     let [delete_result, fields] = await conn.query(delete_sql);
                     res.send({
@@ -125,10 +125,44 @@ module.exports = async function(req, res) {
             conn.end()
             return
         } else if (request_code == 3) {
+            const level = posted_data.level
+            const give_id = posted_data.give_id
 
-        }
-    
-        
+            // connect db
+            const conn = await mysql.createConnection(db_config);
+
+            // check relation exists or not
+            const check_sql = "SELECT count(*) FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
+            let relation_counter
+            try {
+                let [check_result, fields] = await conn.query(check_sql);
+                relation_counter = check_result[0]["count(*)"]
+            } catch (err) {
+                throw err;
+            }
+
+            // when relation exists, remove its relation
+            if (relation_counter != 0) {
+                const delete_sql = "DELETE FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
+                try {
+                    let [delete_result, fields] = await conn.query(delete_sql);
+                    res.send({
+                        message: 'deleted',
+                        status: 0,
+                    })
+                } catch (err) {
+                    throw err;
+                }
+            } else {
+                res.send({
+                    message: 'it is not connected',
+                    status: 1,
+                })
+            }
+
+            conn.end()
+            return
+        }     
     } else {
         console.log("this user doesn't uthed")
         res.send({
