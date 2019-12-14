@@ -13,8 +13,7 @@ module.exports = async function(req, res) {
     let posted_data = req.body
     let email = posted_data.email
     let password_hash = crypto.createHash('sha256').update(mysql.escape(posted_data.password), 'utf8').digest('hex');
-
-
+    
     const auth_result = await user_auth(email, password_hash)
     // return number means the status of auth
     // 0 : auth succeed
@@ -33,9 +32,10 @@ module.exports = async function(req, res) {
         if (request_code == 0){
             // connect db
             const conn = await mysql.createConnection(db_config);
+            
 
             // get [user_id]'s relation from relation
-            const get_my_relation_sql = "SELECT give_id, level, created FROM relation where user_id = " + user_id + ";" 
+            const get_my_relation_sql = "SELECT user_id, level, created FROM relation where give_id = " + user_id + ";" 
             try {
                 let [relation, fields] = await conn.query(get_my_relation_sql);
                 res.send({
