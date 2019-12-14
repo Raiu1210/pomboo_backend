@@ -143,11 +143,11 @@ module.exports = async function(req, res) {
 
             // when relation exists, remove its relation
             if (relation_counter != 0) {
-                const delete_sql = "DELETE FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
+                const delete_sql = "UPDATE relation SET level = " + level + " WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
                 try {
                     let [delete_result, fields] = await conn.query(delete_sql);
                     res.send({
-                        message: 'deleted',
+                        message: 'level updated',
                         status: 0,
                     })
                 } catch (err) {
