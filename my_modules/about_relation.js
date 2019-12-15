@@ -51,13 +51,12 @@ module.exports = async function(user_id, request_code, posted_data) {
                 let [insert_result, fields] = await conn.query(insert_sql);
                 conn.end()
         
-                return    
+                return insert_result    
             } catch (err) {
                 throw err;
             }
         } 
 
-        
     } else if (request_code == 2) {
         const give_id = posted_data.give_id
 
