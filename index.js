@@ -12,7 +12,7 @@ const test = require('./apps/test')
 const registration = require('./apps/registration')
 const login = require('./apps/login')
 const update_location = require('./apps/update_location')
-const about_relation = require('./apps/about_relation')
+const relation = require('./apps/relation')
 
 // var options = {
 //     key:  fs.readFileSync('../../../ssl/localhost.key'),
@@ -31,7 +31,7 @@ app.get('/', test.test_func)
 app.post('/registration', registration)
 app.post('/login', login)
 app.post('/update_location', update_location)
-app.post('/about_relation', about_relation)
+app.post('/relation', relation)
 
 
 server.listen(process.env.PORT || 3000)
