@@ -108,14 +108,13 @@ module.exports = async function(user_id, request_code, posted_data) {
             const delete_sql = "UPDATE relation SET level = " + level + " WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
             try {
                 let [delete_result, fields] = await conn.query(delete_sql);
-                
+                conn.end()
+        
+                return 0        
             } catch (err) {
                 throw err;
             }
         } 
-
-        conn.end()
-        return
     }     
 
 
