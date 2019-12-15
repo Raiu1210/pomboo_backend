@@ -25,7 +25,6 @@ module.exports = async function(req, res) {
 
         res.send({
             message: 'Your request result is here',
-            status: 0,
             result: result
         })
     }

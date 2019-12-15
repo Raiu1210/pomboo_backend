@@ -51,7 +51,7 @@ module.exports = async function(user_id, request_code, posted_data) {
                 let [insert_result, fields] = await conn.query(insert_sql);
                 conn.end()
         
-                return insert_result    
+                return 0    
             } catch (err) {
                 throw err;
             }
@@ -78,14 +78,14 @@ module.exports = async function(user_id, request_code, posted_data) {
             const delete_sql = "DELETE FROM relation WHERE user_id = " + user_id + " AND give_id = " + give_id + ";"
             try {
                 let [delete_result, fields] = await conn.query(delete_sql);
-                
+                conn.end()
+
+                return 0
             } catch (err) {
                 throw err;
             }
         } 
 
-        conn.end()
-        return
     } else if (request_code == 3) {
         const level = posted_data.level
         const give_id = posted_data.give_id
