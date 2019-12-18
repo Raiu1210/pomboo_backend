@@ -13,6 +13,7 @@ const registration = require('./apps/registration')
 const login = require('./apps/login')
 const update_location = require('./apps/update_location')
 const relation = require('./apps/relation')
+const get_frined_location = require('./apps/get_friend_location')
 
 // var options = {
 //     key:  fs.readFileSync('../../../ssl/localhost.key'),
@@ -32,6 +33,7 @@ app.post('/registration', registration)
 app.post('/login', login)
 app.post('/update_location', update_location)
 app.post('/relation', relation)
+app.post('/get_frined_location', get_frined_location)
 
 
 server.listen(process.env.PORT || 3000)
