@@ -28,11 +28,11 @@ module.exports = async function(req, res) {
             const level = friend_list[i]["level"]
             const return_hour = posted_data["return_hour"]
 
-            // console.log({user_id})
-            // console.log({level})
-            // console.log({return_time})
-            get_recent_user_location(user_id, level, return_hour)
+            const friend_location = await get_recent_user_location(user_id, level, return_hour)
+            friend_locations.push(friend_location)
         }
+
+        console.log(friend_locations)
 
         res.send({
             message: 'Your request result is here',
@@ -46,14 +46,12 @@ async function get_recent_user_location(user_id, level, return_hour) {
                                   "WHERE permission <= " + level + " AND " +
                                   "timestamp > NOW() - INTERVAL " + return_hour + " HOUR;" 
 
-
-
-    console.log(get_user_location_sql)
     // connect db
     const conn = await mysql.createConnection(db_config);
     try {
         let [friend_location, fields] = await conn.query(get_user_location_sql);
-        console.log(friend_location)
+        
+        return friend_location
     } catch (err) {
         throw err;
     } 
