@@ -69,5 +69,7 @@ async function get_recent_user_location(user_id, level) {
         return {"data_exist": data_exist, "contents": contents}
     } catch (err) {
         throw err;
-    } 
+    } finally {
+        conn.end()
+    }
 }
