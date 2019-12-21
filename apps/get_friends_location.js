@@ -26,32 +26,47 @@ module.exports = async function(req, res) {
         for(var i=0; i<friend_list.length; i++) {
             const user_id = friend_list[i]["user_id"]
             const level = friend_list[i]["level"]
-            const return_hour = posted_data["return_hour"]
 
-            const friend_location = await get_recent_user_location(user_id, level, return_hour)
-            friend_locations.push(friend_location)
+            const friend_location = await get_recent_user_location(user_id, level)
+            // const return_obj = friend_location["contents"]
+            if (friend_location["data_exist"]) {
+                friend_locations.push(friend_location["contents"])
+            }
         }
-
-        console.log(friend_locations)
-
+        
         res.send({
             message: 'Your request result is here',
+            friend_locations: friend_locations
         })
     }
 }
 
 
-async function get_recent_user_location(user_id, level, return_hour) {
+async function get_recent_user_location(user_id, level) {
+    let data_exist = false
+    let contents = {}
+
     const get_user_location_sql = "SELECT * FROM user_" + user_id + "_location " + 
-                                  "WHERE permission <= " + level + " AND " +
-                                  "timestamp > NOW() - INTERVAL " + return_hour + " HOUR;" 
+                                  "WHERE permission <= " + level + 
+                                  " ORDER BY timestamp DESC LIMIT 1;"
+
 
     // connect db
     const conn = await mysql.createConnection(db_config);
     try {
-        let [friend_location, fields] = await conn.query(get_user_location_sql);
-        
-        return friend_location
+        let [friend_data, fields] = await conn.query(get_user_location_sql);
+        if (friend_data.length != 0) {
+            data_exist = true
+            contents = {
+                "user_id" : user_id,
+                "permission" : friend_data[0]["permission"],
+                "latitude" : friend_data[0]["latitude"],
+                "longitude" : friend_data[0]["longitude"],
+                "timestamp" : friend_data[0]["timestamp"]
+            }
+        }  
+
+        return {"data_exist": data_exist, "contents": contents}
     } catch (err) {
         throw err;
     } 

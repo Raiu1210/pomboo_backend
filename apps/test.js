@@ -27,4 +27,4 @@ module.exports.test_func = function(req, res) {
 // curl -X POST -H "Content-Type: application/json" -d '{"email":"baio1484@gmail.com", "password":"oppai", "request_code":3, "level":3, "give_id":1}' localhost:3000/relation
 
 // // get friend's location
-// curl -X POST -H "Content-Type: application/json" -d '{"email":"baio1484@gmail.com", "password":"oppai", "return_hour":1}' localhost:3000/get_frined_location
+// curl -X POST -H "Content-Type: application/json" -d '{"email":"baio1484@gmail.com", "password":"oppai"}' localhost:3000/get_frined_location
